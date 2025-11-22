@@ -3,18 +3,26 @@ import { DB_NAME } from "../constants.js";
 
 const connectDB = async () => {
     try {
+        // --- DEBUG LOGS (Add these lines) ---
+        console.log("----------------DEBUG START----------------");
+        console.log("1. Original URI:", process.env.MONGODB_URI);
+        console.log("2. DB Name:", DB_NAME);
         
-        // Connect to MongoDB
-        // Using environment variable for MongoDB URI and database name
-        //  from constants file
-        // Connection instance - to log the host after connection
-        const connectionInstance=await mongoose.connect
-        (`${process.env.MONGODB_URI}/${DB_NAME}`);
-        console.log(`\n Connected to MongoDB !! DB HOST:
-        ${connectionInstance.connection.host} \n`); // Log the host of the connected database
+        let uri = process.env.MONGODB_URI || ""; // Fallback to empty string if undefined
+        if (uri.endsWith("/")) {
+            uri = uri.slice(0, -1);
+        }
+        
+        console.log("3. Fixed URI:", uri);
+        console.log("4. Final Connection String:", `${uri}/${DB_NAME}`);
+        console.log("----------------DEBUG END------------------");
+        // ------------------------------------
+
+        const connectionInstance = await mongoose.connect(`${uri}/${DB_NAME}`);
+        console.log(`\n Connected to MongoDB !! DB HOST: ${connectionInstance.connection.host} \n`);
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
-        process.exit(1); // Exit process with failure
+        process.exit(1);
     }
 }
 
